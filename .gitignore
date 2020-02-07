@@ -1,0 +1,4 @@
+*.json
+*.csv
+*.numbers
+__pycache__

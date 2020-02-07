@@ -89,7 +89,7 @@ class Financier:
             transactions.append(transaction)
         return transactions
 
-    def get_debt(self):
+    def calculate_debt(self):
         today = Date.today()
         prev_payday = today.prev_payday()
         subscriptions = self.recurring_payments.get_subscriptions()
