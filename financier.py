@@ -41,6 +41,14 @@ class Financier:
         def matches(self, subscription):
             return Financier.is_match(subscription, self)
 
+        def __eq__(self, other):
+            return all([
+                isinstance(other, Transaction),
+                self.name == other.name,
+                self.amount == other.amount,
+                self.date == other.date,
+            ])
+
     def __init__(self,
                  subscriptions_table_filename,
                  plaid_credentials_filename,
@@ -72,22 +80,31 @@ class Financier:
         return subscriptions
 
     def get_transactions(self, start_date, end_date):
+
+        def process_batch(start_date, end_date):
+            response = self.client.Transactions.get(self.access_token,
+                                                    str(start_date),
+                                                    str(end_date))
+            for new_dict in response['transactions']:
+                new_transaction = self.Transaction(new_dict['name'],
+                                                   new_dict['amount'],
+                                                   Date(new_dict['date']))
+                for i in range(len(transactions)):
+                    transaction = transactions[-1 - i]
+                    if transaction.date != new_transaction.date:
+                        transactions.append(new_transaction)
+                        break
+                    elif transaction == new_transaction:
+                        break
+                    else:
+                        continue
+                
         transactions = []
-        while not transactions or Date(transactions[-1]['date']) > start_date:
+        while not transactions or transactions[-1].date > start_date:
             if transactions:
-                end_date = Date(transactions[-1]['date'])
-            response = self.client.Transactions.get(self.access_token, str(start_date), str(end_date))
-            transactions.extend(response['transactions'])
-        response = self.client.Transactions.get(self.access_token, str(start_date), str(start_date))
-        transactions.extend(response['transactions'])
-        transactions_set = set(map(json.dumps, transactions))
-        transaction_dicts = sorted(map(json.loads, transactions_set),
-                                   key=lambda t: t['date'],
-                                   reverse=True)
-        transactions = []
-        for t in transaction_dicts:
-            transaction = self.Transaction(t['name'], t['amount'], Date(t['date']))
-            transactions.append(transaction)
+                end_date = transactions[-1].date
+            process_batch(start_date, end_date)
+        process_batch(start_date, start_date)
         return transactions
 
     def calculate_debt(self):
