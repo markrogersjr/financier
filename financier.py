@@ -63,11 +63,10 @@ class Financier:
                 date = Date(year, month, day)
                 dates.append(date)
             else:
-                print(next_payday.year, next_payday.month, day)
                 date = Date(next_payday.year, next_payday.month, day)
                 dates.append(date)
         subscriptions = []
-        for i, name, alias in self.subscriptions_table.to_records():
+        for i, name, amount, day, alias in self.subscriptions_table.to_records():
             subscription = self.Subscription(name, amount, dates[i], alias)
             subscriptions.append(subscription)
         return subscriptions
@@ -82,7 +81,9 @@ class Financier:
         response = self.client.Transactions.get(self.access_token, str(start_date), str(start_date))
         transactions.extend(response['transactions'])
         transactions_set = set(map(json.dumps, transactions))
-        transaction_dicts = sorted(map(json.loads, transactions_set), key=lambda t: -t['date'])
+        transaction_dicts = sorted(map(json.loads, transactions_set),
+                                   key=lambda t: t['date'],
+                                   reverse=True)
         transactions = []
         for t in transaction_dicts:
             transaction = self.Transaction(t['name'], t['amount'], Date(t['date']))
@@ -92,9 +93,9 @@ class Financier:
     def calculate_debt(self):
         today = Date.today()
         prev_payday = today.prev_payday()
-        subscriptions = self.recurring_payments.get_subscriptions()
+        subscriptions = self.get_subscriptions()
         subscriptions = [s for s in subscriptions if s.date >= prev_payday]
-        transactions = self.bank_client.get_transactions(prev_payday, today)
+        transactions = self.get_transactions(prev_payday, today)
         remaining_subscriptions = []
         for i, subscription in enumerate(subscriptions):
             has_match = False

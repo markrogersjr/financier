@@ -8,7 +8,7 @@ def main():
                           'bank_credentials.json')
     debt = financier.calculate_debt()
     payday = Date.today().next_payday()
-    print('You must keep at least ${debt:.02f} in your checking account until {payday}.')
+    print(f'You must keep at least ${debt:.02f} in your checking account until {payday}.')
 
 
 if __name__ == '__main__':
