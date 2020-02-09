@@ -43,7 +43,7 @@ class Financier:
 
         def __eq__(self, other):
             return all([
-                isinstance(other, Transaction),
+                isinstance(other, Financier.Transaction),
                 self.name == other.name,
                 self.amount == other.amount,
                 self.date == other.date,
@@ -79,6 +79,17 @@ class Financier:
             subscriptions.append(subscription)
         return subscriptions
 
+    def get_balance(self):
+        today = Date.today()
+        response = self.client.Transactions.get(self.access_token,
+                                                str(today),
+                                                str(today))
+        balance = 0
+        for account in response['accounts']:
+            if account['type'] == 'depository':
+                balance += account['balances']['available']
+        return balance
+
     def get_transactions(self, start_date, end_date):
 
         def process_batch(start_date, end_date):
@@ -89,15 +100,18 @@ class Financier:
                 new_transaction = self.Transaction(new_dict['name'],
                                                    new_dict['amount'],
                                                    Date(new_dict['date']))
-                for i in range(len(transactions)):
-                    transaction = transactions[-1 - i]
-                    if transaction.date != new_transaction.date:
-                        transactions.append(new_transaction)
-                        break
-                    elif transaction == new_transaction:
-                        break
-                    else:
-                        continue
+                if not transactions:
+                    transactions.append(new_transaction)
+                else:
+                    for i in range(len(transactions)):
+                        transaction = transactions[-1 - i]
+                        if transaction.date != new_transaction.date:
+                            transactions.append(new_transaction)
+                            break
+                        elif transaction == new_transaction:
+                            break
+                        else:
+                            continue
                 
         transactions = []
         while not transactions or transactions[-1].date > start_date:
@@ -105,6 +119,8 @@ class Financier:
                 end_date = transactions[-1].date
             process_batch(start_date, end_date)
         process_batch(start_date, start_date)
+        for transaction in transactions:
+            print(f'{str(transaction.date)} | ' + f'${transaction.amount:.02f}'.rjust(9) + f' | {transaction.name}')
         return transactions
 
     def calculate_debt(self):
@@ -122,4 +138,6 @@ class Financier:
                     break
             if not has_match:
                 remaining_subscriptions.append(i)
+        for i in remaining_subscriptions:
+            print(f'Failed to match {subscriptions[i]}. Has transaction posted yet?')
         return sum(subscriptions[i].amount for i in remaining_subscriptions)
