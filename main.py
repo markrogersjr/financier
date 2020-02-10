@@ -1,3 +1,4 @@
+import os
 from date import Date
 from financier import Financier
 
@@ -20,6 +21,7 @@ def main():
         f'SPEND = {format_currency(balance - debt)}',
         f'PAYDAY = {repr(payday)}',
     ])
+    os.system('chmod 777 results')
     with open('results', 'w') as f:
         f.write(msg)
 
