@@ -119,8 +119,6 @@ class Financier:
                 end_date = transactions[-1].date
             process_batch(start_date, end_date)
         process_batch(start_date, start_date)
-        for transaction in transactions:
-            print(f'{str(transaction.date)} | ' + f'${transaction.amount:.02f}'.rjust(9) + f' | {transaction.name}')
         return transactions
 
     def calculate_debt(self):
@@ -138,6 +136,4 @@ class Financier:
                     break
             if not has_match:
                 remaining_subscriptions.append(i)
-        for i in remaining_subscriptions:
-            print(f'Failed to match {subscriptions[i]}. Has transaction posted yet?')
         return sum(subscriptions[i].amount for i in remaining_subscriptions)
