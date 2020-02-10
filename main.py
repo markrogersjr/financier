@@ -23,7 +23,7 @@ def main():
     ])
     with open('results', 'w') as f:
         f.write(msg)
-    os.system('chmod 777 results')
+    os.system('rm -f results && touch results && chmod 777 results')
 
 
 if __name__ == '__main__':
