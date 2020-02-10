@@ -21,9 +21,9 @@ def main():
         f'SPEND = {format_currency(balance - debt)}',
         f'PAYDAY = {repr(payday)}',
     ])
-    os.system('chmod 777 results')
     with open('results', 'w') as f:
         f.write(msg)
+    os.system('chmod 777 results')
 
 
 if __name__ == '__main__':
