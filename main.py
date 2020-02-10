@@ -20,7 +20,7 @@ def main():
         f'SPEND = {format_currency(balance - debt)}',
         f'PAYDAY = {repr(payday)}',
     ])
-    with open('results', 'r') as f:
+    with open('results', 'w') as f:
         f.write(msg)
 
 
