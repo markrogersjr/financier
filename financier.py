@@ -141,8 +141,8 @@ class Financier:
         for i in remaining_subscriptions:
             print(' | '.join([
                 f'{subscriptions[i].date}',
-                '${subscriptions[i].amount:.02f}',
-            ])
+                f'${subscriptions[i].amount:.02f}',
+            ]))
         debt = sum(subscriptions[i].amount for i in remaining_subscriptions)
         if today < Date(2020, 2, 14):
             debt -= 65.58 + 669.79 + 236.02
