@@ -21,9 +21,10 @@ def main():
         f'SPEND = {format_currency(balance - debt)}',
         f'PAYDAY = {repr(payday)}',
     ])
+    print(msg)
+    os.system('rm -f results && touch results && chmod 777 results')
     with open('results', 'w') as f:
         f.write(msg)
-    os.system('rm -f results && touch results && chmod 777 results')
 
 
 if __name__ == '__main__':
