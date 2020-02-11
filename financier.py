@@ -95,7 +95,8 @@ class Financier:
         def process_batch(start_date, end_date):
             response = self.client.Transactions.get(self.access_token,
                                                     str(start_date),
-                                                    str(end_date))
+                                                    str(end_date),
+                                                    count=500)
             for new_dict in response['transactions']:
                 new_transaction = self.Transaction(new_dict['name'],
                                                    new_dict['amount'],
