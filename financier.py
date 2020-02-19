@@ -122,6 +122,11 @@ class Financier:
         process_batch(start_date, start_date)
         return transactions
 
+    @classmethod
+    def format_currency(cls, amount, digits=4):
+        neg = '-' if amount < 0 else ''
+        return f'{neg}${abs(amount):.02f}'.rjust(digits + len('-$.00'))
+
     def calculate_debt(self):
         today = Date.today()
         prev_payday = today.prev_payday()
@@ -142,7 +147,8 @@ class Financier:
         for i in remaining_subscriptions:
             print(' | '.join([
                 f'{subscriptions[i].date}',
-                f'${subscriptions[i].amount:.02f}',
+                Financier.format_currency(subscriptions[i].amount),
+                f'{subscriptions[i].alias}',
             ]))
         debt = sum(subscriptions[i].amount for i in remaining_subscriptions)
         if today < Date(2020, 2, 14):
