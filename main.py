@@ -5,10 +5,6 @@ from financier import Financier
 
 def main():
 
-    def format_currency(amount):
-        neg_sign = lambda x: '-' if x < 0 else ''
-        return f'{neg_sign(amount)}${abs(amount):.02f}'
-
     financier = Financier('subscriptions.csv',
                           'plaid_credentials.json',
                           'bank_credentials.json')
@@ -16,9 +12,9 @@ def main():
     payday = Date.today().next_payday()
     balance = financier.get_balance()
     msg = '\n'.join([
-        f'BALANCE = {format_currency(balance)}',
-        f'DEBT = {format_currency(debt)}',
-        f'SPEND = {format_currency(balance - debt)}',
+        f'BALANCE = {Financier.format_currency(balance)}',
+        f'DEBT = {Financier.format_currency(debt)}',
+        f'SPEND = {Financier.format_currency(balance - debt)}',
         f'PAYDAY = {repr(payday)}',
     ])
     print(msg)

@@ -151,6 +151,4 @@ class Financier:
                 f'{subscriptions[i].alias}',
             ]))
         debt = sum(subscriptions[i].amount for i in remaining_subscriptions)
-        if today < Date(2020, 2, 14):
-            debt -= 65.58 + 669.79 + 236.02
         return debt
