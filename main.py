@@ -1,13 +1,20 @@
 import os
+from argparse import ArgumentParser
 from date import Date
 from financier import Financier
 
 
 def main():
 
-    financier = Financier('subscriptions.csv',
-                          'plaid_credentials.json',
-                          'bank_credentials.json')
+    parser = ArgumentParser()
+    parser.add_argument('--subscriptions_filename')
+    parser.add_argument('--plaid_credentials_filename')
+    parser.add_argument('--bank_credentials_filename')
+    args = parser.parse_args()
+
+    financier = Financier(args.subscriptions_filename,
+                          args.plaid_credentials_filename,
+                          args.bank_credentials_filename)
     debt = financier.calculate_debt()
     payday = Date.today().next_payday()
     balance = financier.get_balance()
