@@ -127,28 +127,22 @@ class Financier:
         neg = '-' if amount < 0 else ''
         return f'{neg}${abs(amount):.02f}'.rjust(digits + len('-$.00'))
 
-    def calculate_debt(self):
+    def get_remaining_subscriptions(self):
         today = Date.today()
         prev_payday = today.prev_payday()
         subscriptions = self.get_subscriptions()
         subscriptions = [s for s in subscriptions if s.date >= prev_payday]
         transactions = self.get_transactions(prev_payday, today)
         remaining_subscriptions = []
-        for i, subscription in enumerate(subscriptions):
+        for subscription in subscriptions:
             has_match = False
             for transaction in transactions:
                 if subscription.matches(transaction):
                     has_match = True
                     break
             if not has_match:
-                remaining_subscriptions.append(i)
-        if remaining_subscriptions:
-            print(f'REMAINING SUBSCRIPTIONS')
-        for i in remaining_subscriptions:
-            print(' | '.join([
-                f'{subscriptions[i].date}',
-                Financier.format_currency(subscriptions[i].amount),
-                f'{subscriptions[i].alias}',
-            ]))
-        debt = sum(subscriptions[i].amount for i in remaining_subscriptions)
-        return debt
+                remaining_subscriptions.append(subscription)
+        return remaining_subscriptions
+
+    def calculate_debt(self):
+        return sum(sub.amount for sub in self.get_remaining_subscriptions())
