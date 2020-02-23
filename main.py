@@ -10,6 +10,8 @@ def main():
     parser.add_argument('--subscriptions_filename')
     parser.add_argument('--plaid_credentials_filename')
     parser.add_argument('--bank_credentials_filename')
+    parser.add_argument('--from_email')
+    parser.add_argument('--to_email')
     args = parser.parse_args()
 
     financier = Financier(args.subscriptions_filename,
@@ -19,6 +21,10 @@ def main():
     payday = Date.today().next_payday()
     balance = financier.get_balance()
     msg = [
+        f'From: {args.from_email}',
+        f'To: {args.to_email}',
+        f'Subject: Personal Finance Report',
+        '',
         f'BALANCE = {Financier.format_currency(balance)}',
         f'DEBT = {Financier.format_currency(debt)}',
         f'SPEND = {Financier.format_currency(balance - debt)}',
