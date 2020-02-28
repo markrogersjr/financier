@@ -62,10 +62,12 @@ class Financier:
 
     def get_subscriptions(self):
         today = Date.today()
+        last_day = Date.last_of_month().day
         next_payday = today.next_payday()
         prev_payday = today.prev_payday()
         dates = []
         for i, day in enumerate(self.subscriptions_table.Day):
+            day = min(day, last_day)
             if day >= next_payday.day:
                 year, month = next_payday.prevmonth()
                 date = Date(year, month, day)
