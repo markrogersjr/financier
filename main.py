@@ -20,11 +20,15 @@ def main():
     debt = financier.calculate_debt()
     payday = Date.today().next_payday()
     balance = financier.get_balance()
-    msg = [
+    header = [
         f'From: {args.from_email}',
         f'To: {args.to_email}',
         f'Subject: Personal Finance Report',
-        '',
+        f'Content-Type: text/html; charset=utf-8',
+        f'<!DOCTYPE html>'
+    ]
+    header = '\n'.join(header)
+    body = [
         f'BALANCE = {Financier.format_currency(balance)}',
         f'DEBT = {Financier.format_currency(debt)}',
         f'SPEND = {Financier.format_currency(balance - debt)}',
@@ -32,12 +36,19 @@ def main():
     ]
     remaining_subscriptions = financier.get_remaining_subscriptions()
     if remaining_subscriptions:
-        msg.extend(['', 'REMAINING SUBSCRIPTIONS'])
-    for sub in remaining_subscriptions:
-        amount = Financier.format_currency(sub.amount).strip()
-        date = f'{sub.date.month}/{sub.date.day}'
-        msg.append(f'{sub.name} {amount} {date}')
-    msg = '\n'.join(msg)
+        body.extend(['', 'REMAINING SUBSCRIPTIONS'])
+        table = ['<table style="font-size:10px;font-weight:normal">']
+        for sub in remaining_subscriptions:
+            amount = Financier.format_currency(sub.amount).strip()
+            date = f'{sub.date.month}/{sub.date.day}'
+            row = [f'{sub.name}', f'{amount}', f'{date}']
+            row = ''.join(f'<th>{c}</th>' for c in row)
+            table.append('<tr>' + row + '</tr>\n')
+        table.append('</table>')
+        body.append(''.join(table))
+    body = '<br>\n'.join(body)
+    body = '<html><body>' + body + '</body></html>'
+    msg = header + body
     with open('results', 'w') as f:
         f.write(msg)
 
