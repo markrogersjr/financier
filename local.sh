@@ -1,6 +1,6 @@
 #!/bin/bash
 # to copy files over to host, simply run `bash local.sh`
-source env.rc
+source env.sh
 ssh -i "$PEMFILE" "$USER"@"$HOST" 'sudo rm -rf financier; git clone https://github.com/markrogersjr/financier.git; chmod 777 financier/remote.sh'
 for f in $ENV_FILE $BANK_CREDS $PLAID_CREDS $SUBSCRIPTIONS
 do

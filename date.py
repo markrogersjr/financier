@@ -145,7 +145,7 @@ class Date:
         prev_midmonth_payday = (Date.first_of_month() - 1).midmonth_payday()
         prev_endmonth_payday = (Date.first_of_month() - 1).endmonth_payday()
         next_midmonth_payday = (Date.last_of_month() + 1).midmonth_payday()
-        if self == this_endmonth_payday:
+        if this_endmonth_payday <= self <= Date.last_of_month():
             return this_midmonth_payday, this_endmonth_payday, next_midmonth_payday
         elif this_midmonth_payday <= self < this_endmonth_payday:
             return prev_endmonth_payday, this_midmonth_payday, this_endmonth_payday

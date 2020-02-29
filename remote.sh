@@ -4,7 +4,7 @@
 #   2. add a line to crontab file with command
 #        `sudo bash $HOME/financier/remote.sh`
 cd $HOME/financier
-source env.rc
+source env.sh
 rm -f results
 python3.8 main.py --subscriptions_filename $SUBSCRIPTIONS \
                   --plaid_credentials_filename $PLAID_CREDS \
@@ -12,4 +12,10 @@ python3.8 main.py --subscriptions_filename $SUBSCRIPTIONS \
                   --from_email $FROM_EMAIL \
                   --to_email $TO_EMAIL
 chmod 777 results
-cat results | sendmail -f $FROM_EMAIL -t $TO_EMAIL
+if [ $MODE = DEPLOY ]; then
+	cat results | sendmail -f $FROM_EMAIL -t $TO_EMAIL
+elif [ $MODE  = DEBUG ]; then
+	cat results
+else
+	echo "Unrecognized mode \"$MODE\". Choose between \"DEPLOY\" and \"DEBUG\"."
+fi
