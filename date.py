@@ -128,15 +128,23 @@ class Date:
         return self.datetime != Date.set_to_midnight(date)
 
     @classmethod
-    def first_of_month(self):
-        today = Date.today()
-        return Date(today.year, today.month, 1)
-
+    def first_of_month(self, year=None, month=None):
+        if year is month is None:
+            today = Date.today()
+            year, month = today.year, today.month
+        elif year is None or month is None:
+            raise RuntimeError('Must specify both year and month, or neither.')
+        return Date(year, month, 1)
+ 
     @classmethod
-    def last_of_month(self):
-        today = Date.today()
-        num_days = calendar.monthrange(today.year, today.month)[1]
-        return Date(today.year, today.month, num_days)
+    def last_of_month(self, year=None, month=None):
+        if year is month is None:
+            today = Date.today()
+            year, month = today.year, today.month
+        elif year is None or month is None:
+            raise RuntimeError('Must specify both year and month, or neither.')
+        num_days = calendar.monthrange(year, month)[1]
+        return Date(year, month, num_days)
 
     def paydays(self):
         today = Date.today()

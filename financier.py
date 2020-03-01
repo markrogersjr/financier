@@ -67,14 +67,13 @@ class Financier:
         prev_payday = today.prev_payday()
         dates = []
         for i, day in enumerate(self.subscriptions_table.Day):
-            day = min(day, last_day)
             if day >= next_payday.day:
                 year, month = next_payday.prevmonth()
-                date = Date(year, month, day)
-                dates.append(date)
             else:
-                date = Date(next_payday.year, next_payday.month, day)
-                dates.append(date)
+                year, month = next_payday.year, next_payday.month
+            day = min(day, Date.last_of_month(year, month).day)
+            date = Date(year, month, day)
+            dates.append(date)
         subscriptions = []
         for i, name, amount, day, alias in self.subscriptions_table.to_records():
             subscription = self.Subscription(name, amount, dates[i], alias)
